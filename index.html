@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Topologische 2-Mannigfaltigkeiten Visualisator</title>
+		<meta name="author" content="Luca Leon Happel">
+		<link rel="stylesheet" href="css/master.css">
+		<script type="module" src="src/main.mjs"></script>
+	</head>
+	<body>
+		<h2>Topologische 2-Mannigfaltigkeiten Visualisator</h2>
+		<div id="preview"></div>
+		<div>
+			<h3>Einstellungen</h3>
+			<table>
+				<tr>
+					<td >Bildgröße</td>
+					<td><input type="number" id="width" value="300"></td>
+					<td><input type="number" id="height" value="300"></td>
+				</tr>
+				<tr>
+					<td >Orientierbar</td>
+					<td><input type="checkbox" id="orientable" checked></td>
+				</tr>
+				<tr>
+					<td>Geschlecht/Kreuzkappenzahl</td>
+					<td><input type="number" id="demigenus" min="0" step="1" value="1"></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
