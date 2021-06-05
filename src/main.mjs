@@ -54,7 +54,7 @@ function genMesh(
 	orientable=getOrientable(),
 	genus=getGenus(),
 ){
-	const texture = new THREE.TextureLoader().load( '../res/texture.png' );
+	const texture = new THREE.TextureLoader().load( 'res/texture.png' );
 	texture.magFilter = THREE.NearestFilter;
 	texture.minFilter = THREE.NearestFilter;
 	const material = new THREE.MeshLambertMaterial( { map: texture } );
@@ -90,6 +90,46 @@ function updateMesh(orientable, genus){
 	scene.add(mesh);
 }
 
+/**
+ * Remove old name, formula, euler-characteristic
+ * and replace it by correct info
+ */
+function updateInfo(){
+	document.getElementById("name").innerText = name();
+	document.getElementById("formula").innerText = formula();
+	document.getElementById("eulerchar").innerText = eulerChar();
+	MathJax.typeset()
+}
+
+/**
+ * Returns the name for a given topological 2-manifold
+ */
+function name(
+	orientable=getOrientable(),
+	genus=getGenus(),
+){
+	return `${orientable?"":"Nicht-"}orientierbare 2-Mannigfaltigkeit von ${orientable?"Geschlecht":"Kreuzkappenzahl"} ${genus}`
+}
+
+/**
+ * Returns the formula for a given topological 2-manifold
+*/
+function formula(
+	orientable=getOrientable(),
+	genus=getGenus(),
+){
+	return `\\(\\#_{j=1}^${genus} ${orientable?"T^2":"P^2"}\\)`
+}
+
+/**
+ * Returns the euler characteristic for a given topological 2-manifold
+*/
+function eulerChar(
+	orientable=getOrientable(),
+	genus=getGenus(),
+){
+	return orientable? 2-2*genus : 2-genus
+}
 
 /**
  * Return true/false if the user checked orientable
@@ -108,7 +148,7 @@ function getGenus(){
 }
 
 document.getElementById("demigenus").onchange =
-document.getElementById("orientable").onchange = _ => updateMesh();
+document.getElementById("orientable").onchange = _ => {updateMesh(); updateInfo()};
 
 document.getElementById("width").onchange =
 document.getElementById("height").onchange = _ => rendererResize();
