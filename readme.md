@@ -15,3 +15,7 @@ genau diese darzustellen.
 ![https://i.imgur.com/WY6f63V.png](https://i.imgur.com/WY6f63V.png)
 
 ![https://i.imgur.com/znt1bhe.png](https://i.imgur.com/znt1bhe.png)
+
+![https://i.imgur.com/PXx3m83.png](https://i.imgur.com/PXx3m83.png)
+
+![https://i.imgur.com/OAqeQ43.png](https://i.imgur.com/OAqeQ43.png)
