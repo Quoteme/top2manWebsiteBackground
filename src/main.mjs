@@ -21,7 +21,7 @@ function init(){
 	pointLight = new THREE.PointLight( 0xffffff )
 	pointLight.position.set(200, 200, 200)
 	scene.add(pointLight);
-	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	renderer = new THREE.WebGLRenderer( { antialias: true, preserveDrawingBuffer: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.physicallyCorrectLights = true;
 	document.getElementById("preview").appendChild( renderer.domElement );
@@ -194,6 +194,13 @@ function getOrientable(){
  */
 function getGenus(){
 	return parseInt(document.getElementById("demigenus").value);
+}
+
+document.getElementById("save").onclick = _ => {
+	let a = document.createElement("a");
+	a.href = renderer.domElement.toDataURL().replace("image/png", "image/octet-stream");
+	a.download = `kompakteTop2Man${getOrientable()?"OrientiertGenus":"UnorientiertKreuzkz"}${getGenus()}.png`;
+	a.click();
 }
 
 document.getElementById("demigenus").onchange =
