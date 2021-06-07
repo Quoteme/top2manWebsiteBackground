@@ -26,6 +26,7 @@ function init(){
 		new THREE.MeshBasicMaterial({color: 0xff0000})
 	)
 	player.position.set(-100,0,0);
+	player.visible = false;
 	scene.add(player);
 	renderer = new THREE.WebGLRenderer( { antialias: true, preserveDrawingBuffer: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
@@ -203,7 +204,6 @@ function getGenus(){
 }
 
 function fittingFunctor(x,y){
-	player.visible = true;
 	if( getOrientable() && getGenus()==0)
 		return functorSphere(x,y,100);
 	else if( getOrientable() && getGenus()==1 )
@@ -257,3 +257,6 @@ flaeche.onmousemove = ({offsetX: x, offsetY: y}) => player
 	.position
 	.set(...fittingFunctor(x/flaeche.width,y/flaeche.height,100))
 	// .set(x/flaeche.width*200,y/flaeche.height*200,0)
+
+flaeche.onmouseenter = _ => player.visible = true;
+flaeche.onmouseleave = _ => player.visible = false;
