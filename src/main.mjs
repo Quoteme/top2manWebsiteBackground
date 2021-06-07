@@ -1,5 +1,6 @@
 import * as THREE from './three.module.js';
 import {TrackballControls} from './TrackballControls.js';
+import {ParametricGeometries} from './ParametricGeometries.js'
 
 let camera, controls, scene, renderer;
 let mesh;
@@ -59,11 +60,13 @@ function genMesh(
 	texture.minFilter = THREE.NearestFilter;
 	const material = new THREE.MeshLambertMaterial( { map: texture } );
 	//
+	// Sphere
 	if( orientable && genus==0 )
 		return new THREE.Mesh(
 			new THREE.SphereGeometry(100, 40, 40),
 			material
 		);
+	// n-Torus
 	else if( orientable && genus>=1 ){
 		let mesh = new THREE.Group();
 		let torus = new THREE.Mesh(
@@ -76,8 +79,47 @@ function genMesh(
 			clone.scale.y = (-1)**i
 			mesh.add(clone)
 		}
-		mesh.scale.set(1/Math.sqrt(genus),1/Math.sqrt(genus),1/Math.sqrt(genus))
+		// mesh.scale.set(1/Math.sqrt(genus),1/Math.sqrt(genus),1/Math.sqrt(genus))
 		return mesh;
+	}
+	// Projektiver Raum
+	else if( !orientable && genus==1 ){
+		return new THREE.Mesh(
+			new THREE.ParametricBufferGeometry(
+				(u,v,target) => target.set(
+					150*Math.cos(-2*Math.PI*u)*Math.sin(-Math.PI*v)/2,
+					150*Math.sin(-2*Math.PI*u)*Math.sin(-Math.PI*v)/2,
+					150*(Math.cos(-Math.PI/2*v)**2-Math.cos(-2*Math.PI*u)**2*Math.sin(-Math.PI/2*v)**2))/2
+			, 110, 110 ),
+			material
+		)
+	}
+	// Kleinsche Flasche
+	else if( !orientable && genus==2 ){
+		let mesh = new THREE.Mesh(
+			new THREE.ParametricBufferGeometry( ParametricGeometries.klein, 50, 50 ),
+			material
+		)
+		material.side = THREE.DoubleSide;
+		mesh.scale.set(15,15,15);
+		return mesh
+	}
+	else if( !orientable && genus >2 ){
+		let mesh = new THREE.Group();
+		let a
+		// Dycks Theorem
+		if( genus%2 ){
+			mesh.add(genMesh(true,Math.floor(genus/2)));
+			a = genMesh(false,1);
+		}
+		else{
+			mesh.add(genMesh(true,Math.floor(genus/2)-1));
+			a = genMesh(false,2);
+			a.rotateZ(Math.PI/2)
+		}
+		a.position.set(0,200,0);
+		mesh.add(a)
+		return mesh
 	}
 }
 
