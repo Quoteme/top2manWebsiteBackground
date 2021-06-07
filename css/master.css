@@ -11,4 +11,5 @@ input {
 #flaeche {
 	border: 1px solid black;
 	background-color: #eee;
+	cursor: url(../res/point.png), auto;
 }

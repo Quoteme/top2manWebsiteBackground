@@ -227,9 +227,12 @@ function functorTorus(d1, d2, outerR, innerR, x, y){
 	let u = Math.PI*x;
 	let v = 2*Math.PI*y;
 	return [
-		(d1-totalR) + x * (totalR*2-d1-d2),
-		totalR*Math.sqrt(1-(2*x-1)**2),
-		0,
+		// innerR*Math.cos(v),
+		// 0
+		// innerR*Math.sin(v),
+		(d1-outerR) + x * (outerR*2-d1-d2) + Math.cos(u)*innerR*Math.cos(v),
+		outerR*Math.sqrt(1-(2*x-1)**2) - Math.sin(u)*innerR*Math.cos(v),
+		innerR*Math.sin(v),
 	]
 }
 
