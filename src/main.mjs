@@ -8,6 +8,7 @@ let ambientLight, pointLight
 
 init();
 animate();
+updateInfo();
 
 function init(){
 	camera = new THREE.PerspectiveCamera( 70, 1, 1, 10000 );
@@ -42,6 +43,8 @@ function rendererResize(
 	height=parseInt(document.getElementById("height").value),
 ){
 	renderer.setSize( width, height );
+	document.getElementById("preview").style.width = width+"px";
+	document.getElementById("preview").style.height = height+"px";
 	camera.aspect = width/height;
 	camera.updateProjectionMatrix();
 }
@@ -87,9 +90,9 @@ function genMesh(
 		return new THREE.Mesh(
 			new THREE.ParametricBufferGeometry(
 				(u,v,target) => target.set(
-					150*Math.cos(-2*Math.PI*u)*Math.sin(-Math.PI*v)/2,
-					150*Math.sin(-2*Math.PI*u)*Math.sin(-Math.PI*v)/2,
-					150*(Math.cos(-Math.PI/2*v)**2-Math.cos(-2*Math.PI*u)**2*Math.sin(-Math.PI/2*v)**2))/2
+					150*Math.cos(2*Math.PI*u)*Math.sin(Math.PI*v)/2,
+					150*Math.sin(2*Math.PI*u)*Math.sin(Math.PI*v)/2,
+					-100*(Math.cos(Math.PI/2*v)**2-Math.cos(2*Math.PI*u)**2*Math.sin(Math.PI/2*v)**2))/2
 			, 110, 110 ),
 			material
 		)
@@ -111,13 +114,17 @@ function genMesh(
 		if( genus%2 ){
 			mesh.add(genMesh(true,Math.floor(genus/2)));
 			a = genMesh(false,1);
+			a.position.y = 150;
+			a.position.z = 80;
 		}
 		else{
 			mesh.add(genMesh(true,Math.floor(genus/2)-1));
 			a = genMesh(false,2);
 			a.rotateZ(Math.PI/2)
+			a.position.y = 200;
 		}
-		a.position.set(0,200,0);
+		if( Math.floor((genus+1)/2)%2 )
+			a.position.x = 100;
 		mesh.add(a)
 		return mesh
 	}
@@ -140,7 +147,7 @@ function updateInfo(){
 	document.getElementById("name").innerText = name();
 	document.getElementById("formula").innerText = formula();
 	document.getElementById("eulerchar").innerText = eulerChar();
-	MathJax.typeset()
+	window?.MathJax?.typeset()
 }
 
 /**
@@ -190,7 +197,13 @@ function getGenus(){
 }
 
 document.getElementById("demigenus").onchange =
-document.getElementById("orientable").onchange = _ => {updateMesh(); updateInfo()};
+document.getElementById("orientable").onchange = _ => {
+	if( document.getElementById("demigenus").value=="0"
+		&& !document.getElementById("orientable").checked )
+		document.getElementById("demigenus").value = "1";
+	updateMesh();
+	updateInfo();
+};
 
 document.getElementById("width").onchange =
 document.getElementById("height").onchange = _ => rendererResize();
