@@ -1,6 +1,7 @@
 import * as THREE from './three.module.js';
 import {TrackballControls} from './TrackballControls.js';
-import {ParametricGeometries} from './ParametricGeometries.js'
+import {ParametricGeometries} from './ParametricGeometries.js';
+import {get} from './urlvar/urlvar.mjs';
 
 let camera, controls, scene, renderer;
 let mesh, player;
@@ -11,6 +12,7 @@ animate();
 updateInfo();
 
 function init(){
+	readURLVariables();
 	camera = new THREE.PerspectiveCamera( 70, 1, 1, 10000 );
 	camera.position.z = 400;
 	scene = new THREE.Scene();
@@ -54,6 +56,16 @@ function rendererResize(
 	document.getElementById("preview").style.height = height+"px";
 	camera.aspect = width/height;
 	camera.updateProjectionMatrix();
+}
+
+function readURLVariables(){
+	let urlvars = get();
+	if(urlvars?.orientable=="true")
+		document.getElementById("orientable").checked = true;
+	if(urlvars?.orientable=="false")
+		document.getElementById("orientable").checked = false;
+	if(urlvars?.genus!=undefined)
+		document.getElementById("demigenus").value = parseInt(urlvars.genus);
 }
 
 /**
@@ -155,6 +167,8 @@ function updateInfo(){
 	document.getElementById("formula").innerText = formula();
 	document.getElementById("eulerchar").innerText = eulerChar();
 	window?.MathJax?.typeset()
+	document.getElementById("link").href = `${window.location.origin}/?orientable=${getOrientable()}&genus=${getGenus()}`
+ + "/" + ""
 }
 
 /**
