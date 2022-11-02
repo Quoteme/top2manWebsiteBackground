@@ -9,10 +9,8 @@ let ambientLight, pointLight
 
 init();
 animate();
-updateInfo();
 
 function init(){
-	readURLVariables();
 	camera = new THREE.PerspectiveCamera( 70, 1, 1, 10000 );
 	camera.position.z = 400;
 	scene = new THREE.Scene();
@@ -48,8 +46,8 @@ function animate(){
 }
 
 function rendererResize(
-	width=parseInt(document.getElementById("width").value),
-	height=parseInt(document.getElementById("height").value),
+	width=window.innerWidth,
+	height=window.innerHeight
 ){
 	renderer.setSize( width, height );
 	document.getElementById("preview").style.width = width+"px";
@@ -58,24 +56,14 @@ function rendererResize(
 	camera.updateProjectionMatrix();
 }
 
-function readURLVariables(){
-	let urlvars = get();
-	if(urlvars?.orientable=="true")
-		document.getElementById("orientable").checked = true;
-	if(urlvars?.orientable=="false")
-		document.getElementById("orientable").checked = false;
-	if(urlvars?.genus!=undefined)
-		document.getElementById("demigenus").value = parseInt(urlvars.genus);
-}
-
 /**
  * Generate a Mesh corresponding to a topological 2-manifolg
  * @param {bool} orientable
  * @param {number} genus - (Demi-)Genus
  */
 function genMesh(
-	orientable=getOrientable(),
-	genus=getGenus(),
+	orientable=true,
+	genus=1,
 ){
 	const texture = new THREE.TextureLoader().load( 'res/texture.png' );
 	texture.magFilter = THREE.NearestFilter;
@@ -158,122 +146,4 @@ function updateMesh(orientable, genus){
 	scene.add(mesh);
 }
 
-/**
- * Remove old name, formula, euler-characteristic
- * and replace it by correct info
- */
-function updateInfo(){
-	document.getElementById("name").innerText = name();
-	document.getElementById("formula").innerText = formula();
-	document.getElementById("eulerchar").innerText = eulerChar();
-	window?.MathJax?.typeset()
-	document.getElementById("link").href = `${window.location.origin}/?orientable=${getOrientable()}&genus=${getGenus()}`
- + "/" + ""
-}
-
-/**
- * Returns the name for a given topological 2-manifold
- */
-function name(
-	orientable=getOrientable(),
-	genus=getGenus(),
-){
-	return `${orientable?"":"Nicht-"}orientierbare 2-Mannigfaltigkeit von ${orientable?"Geschlecht":"Kreuzkappenzahl"} ${genus}`
-}
-
-/**
- * Returns the formula for a given topological 2-manifold
-*/
-function formula(
-	orientable=getOrientable(),
-	genus=getGenus(),
-){
-	return `\\(\\#_{j=1}^${genus} ${orientable?"T^2":"P^2"}\\)`
-}
-
-/**
- * Returns the euler characteristic for a given topological 2-manifold
-*/
-function eulerChar(
-	orientable=getOrientable(),
-	genus=getGenus(),
-){
-	return orientable? 2-2*genus : 2-genus
-}
-
-/**
- * Return true/false if the user checked orientable
- * @returns {bool} State of the checkbox if the object is orientable
- */
-function getOrientable(){
-	return document.getElementById("orientable").checked
-}
-
-/**
- * Return the user which the user entered in the settings
- * @returns {number} (Demi-)Genus which the user supplied
- */
-function getGenus(){
-	return parseInt(document.getElementById("demigenus").value);
-}
-
-function fittingFunctor(x,y){
-	if( getOrientable() && getGenus()==0)
-		return functorSphere(x,y,100);
-	else if( getOrientable() && getGenus()==1 )
-		return functorTorus(0,0,100,30,x,y);
-	else
-		player.visible = false;
-}
-
-function functorSphere(x,y,radius){
-	let u = Math.PI*x;
-	let v = 2*Math.PI*y;
-	return [
-		-Math.cos(u),
-		Math.sin(v)*Math.sin(u),
-		-Math.cos(v)*Math.sin(u),
-	].map(v => v*radius)
-}
-
-function functorTorus(d1, d2, outerR, innerR, x, y){
-	let totalR = outerR+innerR
-	let u = Math.PI*x;
-	let v = 2*Math.PI*y;
-	return [
-		// innerR*Math.cos(v),
-		// 0
-		// innerR*Math.sin(v),
-		(d1-outerR) + x * (outerR*2-d1-d2) + Math.cos(u)*innerR*Math.cos(v),
-		outerR*Math.sqrt(1-(2*x-1)**2) - Math.sin(u)*innerR*Math.cos(v),
-		innerR*Math.sin(v),
-	]
-}
-
-document.getElementById("save").onclick = _ => {
-	let a = document.createElement("a");
-	a.href = renderer.domElement.toDataURL().replace("image/png", "image/octet-stream");
-	a.download = `kompakteTop2Man${getOrientable()?"OrientiertGenus":"UnorientiertKreuzkz"}${getGenus()}.png`;
-	a.click();
-}
-
-document.getElementById("demigenus").onchange =
-document.getElementById("orientable").onchange = _ => {
-	if( document.getElementById("demigenus").value=="0"
-		&& !document.getElementById("orientable").checked )
-		document.getElementById("demigenus").value = "1";
-	updateMesh();
-	updateInfo();
-};
-
-document.getElementById("width").onchange =
-document.getElementById("height").onchange = _ => rendererResize();
-
-let flaeche = document.getElementById("flaeche");
-flaeche.onmousemove = ({offsetX: x, offsetY: y}) => player
-	.position
-	.set(...fittingFunctor(x/flaeche.width,y/flaeche.height,100))
-	// .set(x/flaeche.width*200,y/flaeche.height*200,0)
-
-flaeche.onmouseenter = _ => player.visible = true;
-flaeche.onmouseleave = _ => player.visible = false;
+addEventListener( 'resize', () => rendererResize( window.innerWidth, window.innerHeight ) );
