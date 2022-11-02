@@ -4,7 +4,7 @@ import {ParametricGeometries} from './ParametricGeometries.js';
 import {get} from './urlvar/urlvar.mjs';
 
 let camera, controls, scene, renderer;
-let mesh, player;
+let meshes, player;
 let ambientLight, pointLight
 
 init();
@@ -14,8 +14,16 @@ function init(){
 	camera = new THREE.PerspectiveCamera( 70, 1, 1, 10000 );
 	camera.position.z = 400;
 	scene = new THREE.Scene();
-	mesh = genMesh();
-	scene.add( mesh );
+  meshes = [...Array(7)].map((_,i) => genMesh(i%2==0,Math.floor(1+i/2)));
+	meshes.forEach(mesh => {
+    mesh.position.x = -1000 * Math.random() +500;
+    mesh.position.y = -1000 * Math.random() +500;
+    mesh.position.z = -1000 * Math.random() -300;
+    mesh.rotation.x = 2 * Math.PI * Math.random();
+    mesh.rotation.y = 2 * Math.PI * Math.random();
+    mesh.rotation.z = 2 * Math.PI * Math.random();
+    scene.add( mesh );
+  })
 	ambientLight = new THREE.AmbientLight( 0xffffff, 0.3 );
 	scene.add( ambientLight );
 	pointLight = new THREE.PointLight( 0xffffff, 0.7 )
@@ -135,15 +143,6 @@ function genMesh(
 		mesh.add(a)
 		return mesh
 	}
-}
-
-/**
- * Remove old mesh and replace it by new one
- */
-function updateMesh(orientable, genus){
-	scene.remove(mesh);
-	mesh = genMesh(orientable, genus);
-	scene.add(mesh);
 }
 
 addEventListener( 'resize', () => rendererResize( window.innerWidth, window.innerHeight ) );
