@@ -3,6 +3,8 @@ import {TrackballControls} from './TrackballControls.js';
 import {ParametricGeometries} from './ParametricGeometries.js';
 import {get} from './urlvar/urlvar.mjs';
 
+const MESHNUMBER = 10;
+
 let camera, controls, scene, renderer;
 let meshes, player;
 let ambientLight, pointLight
@@ -14,14 +16,20 @@ function init(){
 	camera = new THREE.PerspectiveCamera( 70, 1, 1, 10000 );
 	camera.position.z = 400;
 	scene = new THREE.Scene();
-  meshes = [...Array(7)].map((_,i) => genMesh(i%2==0,Math.floor(1+i/2)));
+  meshes = [...Array(MESHNUMBER)].map((_,i) => genMesh(i%2==0,Math.floor(1+i/2)));
 	meshes.forEach(mesh => {
     mesh.position.x = -1000 * Math.random() +500;
     mesh.position.y = -1000 * Math.random() +500;
-    mesh.position.z = -1000 * Math.random() -300;
+    mesh.position.z = -500 * Math.random() -1600;
     mesh.rotation.x = 2 * Math.PI * Math.random();
     mesh.rotation.y = 2 * Math.PI * Math.random();
     mesh.rotation.z = 2 * Math.PI * Math.random();
+    translateGeometry(
+      mesh,
+      -1000 * Math.random() +500,
+      -1000 * Math.random() +500,
+      -1000 * Math.random() +500,
+    )
     scene.add( mesh );
   })
 	ambientLight = new THREE.AmbientLight( 0xffffff, 0.3 );
@@ -47,8 +55,30 @@ function init(){
 	rendererResize();
 }
 
+/**
+ * @param {THREE.Mesh | THREE.Group} mesh A THREE.Mesh or THREE.Group
+ * @param {number} x How much to translate the mesh in the x direction
+ * @param {number} y How much to translate the mesh in the y direction
+ * @param {number} z How much to translate the mesh in the z direction
+ */
+function translateGeometry(mesh, x, y, z){
+  if(mesh.type == "Mesh"){
+    mesh.geometry.translate(x,y,z);
+  }
+  else if(mesh.type == "Group"){
+    mesh.children.forEach(child => {
+      // translateGeometry(child, x, y, z);
+    })
+  }
+}
+
 function animate(){
 	requestAnimationFrame(animate);
+  meshes.forEach(mesh => {
+    mesh.rotation.x += 0.001;
+    mesh.rotation.y += 0.001;
+    mesh.rotation.z += 0.001;
+  })
 	controls.update();
 	renderer.render(scene, camera);
 }
