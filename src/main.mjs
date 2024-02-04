@@ -60,9 +60,11 @@ function init(
 	player.position.set(-100,0,0);
 	player.visible = false;
 	scene.add(player);
-	renderer = new THREE.WebGLRenderer( { antialias: true, preserveDrawingBuffer: true } );
+	renderer = new THREE.WebGLRenderer( { antialias: true, preserveDrawingBuffer: true, alpha: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.physicallyCorrectLights = true;
+	// clear background color
+	renderer.setClearColor( 0xffffff, 0);
 	document.getElementById("preview").appendChild( renderer.domElement );
 	controls = new TrackballControls( camera, renderer.domElement );
 	controls.rotateSpeed = 1.0;
