@@ -33,9 +33,11 @@ function init(
     mesh.userData.pivot.position.y = -ySpread * Math.random() +ySpread/2;
     mesh.userData.pivot.position.z = -zSpread * Math.random() +zSpread/2 -1600;
 
-    mesh.position.x = Math.random() * 1000 - 500;
-    mesh.position.y = Math.random() * 1000 - 500;
-    mesh.position.z = Math.random() * 1000 - 500;
+	// example: http://localhost:8081/?mean=1000&variance=-100
+	const { mean = '500', variance = '1000' } = get();
+    mesh.position.x = Math.random() * Number(mean);
+    mesh.position.y = Math.random() * Number(mean);
+    mesh.position.z = Math.random() * Number(mean) - Number(variance);
 
     const rho = 0.0025
     const phi = Math.random()
