@@ -34,10 +34,17 @@ function init(
     mesh.userData.pivot.position.z = -zSpread * Math.random() +zSpread/2 -1600;
 
 	// example: http://localhost:8081/?mean=1000&variance=-100
-	const { mean = '500', variance = '1000' } = get();
-    mesh.position.x = Math.random() * Number(mean);
-    mesh.position.y = Math.random() * Number(mean);
-    mesh.position.z = Math.random() * Number(mean) - Number(variance);
+	const { 
+		meanX = '0',
+		varianceX = '1000',
+		meanY = '0',
+		varianceY = '0',
+		meanZ = '300',
+		varianceZ = '1000',
+	} = get();
+    mesh.position.x = Number(meanX) + Math.random() * Number(varianceX) - 1/2 * Number(varianceX);
+    mesh.position.y = Number(meanY) + Math.random() * Number(varianceY) - 1/2 * Number(varianceY);
+    mesh.position.z = Number(meanZ) + Math.random() * Number(varianceZ) - 1/2 * Number(varianceZ);
 
     const rho = 0.0025
     const phi = Math.random()
