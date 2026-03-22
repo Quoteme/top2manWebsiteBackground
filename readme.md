@@ -1,21 +1,28 @@
 # Top2Man
 
-Ein kleines Program, welches ich für
+A small program that I am writing for
 [Professor Dr. Stefan Schröer](http://reh.math.uni-duesseldorf.de/~schroeer/)
-für die algebraische Geometrie schreibe.
+in the field of algebraic geometry.
 
-Es ermöglicht nach der Klassifikation aller kompakten,
-zusammenhängenden, nicht-leeren topologischen 2-Mannigfaltigkeiten,
-genau diese darzustellen.
+It allows the visualization of all compact,
+connected, non-empty topological 2-manifolds
+according to their classification.
 
-## Bildschirmfotos
+I adapted it to work as a website background, so that you get to see a new random surface every time you visit my website [https://quoteme.github.io](quoteme.github.io).
 
-![https://i.imgur.com/pAIrxAW.png](https://i.imgur.com/pAIrxAW.png)
+## Downloading a Screenshot
 
-![https://i.imgur.com/WY6f63V.png](https://i.imgur.com/WY6f63V.png)
+```js
+window.location.href = document
+  .querySelector("#preview > canvas")
+  .toDataURL("image/png")
+  .replace("image/png", "image/octet-stream");
+```
 
-![https://i.imgur.com/znt1bhe.png](https://i.imgur.com/znt1bhe.png)
+## Screenshots
 
-![https://i.imgur.com/PXx3m83.png](https://i.imgur.com/PXx3m83.png)
+![screenshot](https://private-user-images.githubusercontent.com/6796009/567360387-d69da25f-87f5-4a13-9033-6ba00d612056.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzQxNDA0MDYsIm5iZiI6MTc3NDE0MDEwNiwicGF0aCI6Ii82Nzk2MDA5LzU2NzM2MDM4Ny1kNjlkYTI1Zi04N2Y1LTRhMTMtOTAzMy02YmEwMGQ2MTIwNTYucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI2MDMyMiUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNjAzMjJUMDA0MTQ2WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9MTJhZTZjNTQwNjVmZjE1ZGYxM2ZlNGNlMWJiYWUyYjY5NmNhN2QxYTdkNjY3ZmEwMmQ5N2UzMDY0NTExYzUyYSZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.qqIiZppRWTqp1KRKbzkB-TEqA0ZB6Wd-NERyzJ6SqII)
 
-![https://i.imgur.com/OAqeQ43.png](https://i.imgur.com/OAqeQ43.png)
+![screenshot](https://private-user-images.githubusercontent.com/6796009/567360418-bcc7ba79-e4e5-445e-b9bb-b8871a28e217.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzQxNDA0MDYsIm5iZiI6MTc3NDE0MDEwNiwicGF0aCI6Ii82Nzk2MDA5LzU2NzM2MDQxOC1iY2M3YmE3OS1lNGU1LTQ0NWUtYjliYi1iODg3MWEyOGUyMTcucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI2MDMyMiUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNjAzMjJUMDA0MTQ2WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9ZDkyOGJiNmI0OGJhNDBiOGZlMDk3NGFiNmQzM2QzM2E4NDdmNjVjNDBiYzk5YTgwMjcwOWVhYjZhMjQxODhkZCZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.l8b46v7MB0LqToCI4Q6P3diCu-4KyqbzSBGXlclhF2w)
+
+![screenshot](https://private-user-images.githubusercontent.com/6796009/567360444-7b530d4b-396d-4fa2-a098-94004e4c4664.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzQxNDA0MDYsIm5iZiI6MTc3NDE0MDEwNiwicGF0aCI6Ii82Nzk2MDA5LzU2NzM2MDQ0NC03YjUzMGQ0Yi0zOTZkLTRmYTItYTA5OC05NDAwNGU0YzQ2NjQucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI2MDMyMiUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNjAzMjJUMDA0MTQ2WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9MDJhOWFhNTYwOWZhODE3OTRhYzAxZjc0YzkyY2Q4MjQ2YjA4MzYwNDgyODhmZmZmZTc3NGRkYzQ1M2U2NjBjNyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.Riq6QhhAkQQqzlp_XXEqQJozOPQP18xXzaMFkFKYlSE)
