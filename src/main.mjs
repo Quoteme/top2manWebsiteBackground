@@ -92,14 +92,17 @@ function init(
   // clear background color
   renderer.setClearColor(0xffffff, 0);
   document.getElementById("preview").appendChild(renderer.domElement);
-  // example: http://localhost:8081/?shader-cs&cs-size=12&cs-radius=80&cs-touch-scale=2&shader-invert
+  // example: http://localhost:8081/?shader-cs&cs-size=12&cs-radius=80&cs-touch-scale=2&cs-empty-opacity=0.3&cs-mono&shader-invert
   const params = get();
   if ("shader-cs" in params) {
+    const emptyOpacity = Number(params["cs-empty-opacity"]);
     effect = new ComputerScienceEffect(renderer, {
       cellSize: Number(params["cs-size"]) || 16,
       radius: Number(params["cs-radius"]) || 50,
       touchScale: Number(params["cs-touch-scale"]) || 3,
+      emptyOpacity: Number.isFinite(emptyOpacity) ? emptyOpacity : undefined,
       invert: "shader-invert" in params,
+      mono: "cs-mono" in params,
     });
     const setPointer = (e) => effect.setPointer(e.clientX, e.clientY, e.pointerType);
     addEventListener("pointermove", setPointer);

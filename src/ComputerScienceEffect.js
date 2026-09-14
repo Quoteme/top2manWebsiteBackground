@@ -49,6 +49,7 @@ uniform float emptyOpacity;
 uniform vec2 pointer;
 uniform float radius;
 uniform bool invert;
+uniform bool mono;
 
 // premultiplied digit color for this pixel
 vec4 digitColor( vec4 under ){
@@ -61,6 +62,7 @@ vec4 digitColor( vec4 under ){
 	vec2 fontUv = ( vec2( digit * ${GLYPH_W}.0, 0.0 ) + g + 0.5 ) / vec2( ${GLYPH_W * 10}.0, ${GLYPH_H}.0 );
 	if( texture2D( font, fontUv ).r < 0.5 ) return vec4( 0.0 );
 	if( count == 0.0 ) return vec4( color * emptyOpacity, emptyOpacity );
+	if( mono ) return vec4( color, 1.0 );
 	return vec4( mix( color, under.rgb, under.a ), 1.0 );
 }
 
@@ -111,21 +113,23 @@ export class ComputerScienceEffect {
   /**
    * @param {THREE.WebGLRenderer} renderer
    * @param {number} cellSize - size of one digit cell in CSS pixels
-   * @param {number} color - digit color where no object color is available
+   * @param {number} color - digit color where no object color is used
    * @param {number} emptyOpacity - opacity of the digits over empty cells
    * @param {number} radius - distance around the pointer without digits, in CSS pixels
    * @param {number} touchScale - factor applied to the radius for touch input, so the effect is not hidden under the finger
    * @param {bool} invert - show digits only around the pointer instead
+   * @param {bool} mono - always use the digit color instead of the object's
    */
   constructor(
     renderer,
     {
       cellSize = 16,
-      color = 0x222222,
+      color = 0x000000,
       emptyOpacity = 0.1,
       radius = 50,
       touchScale = 3,
       invert = false,
+      mono = false,
     } = {},
   ) {
     this.renderer = renderer;
@@ -172,6 +176,7 @@ export class ComputerScienceEffect {
         pointer: { value: this.pointer },
         radius: { value: radius },
         invert: { value: invert },
+        mono: { value: mono },
       },
       vertexShader: QUAD_VERTEX,
       fragmentShader: DIGIT_FRAGMENT,
