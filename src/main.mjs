@@ -1,107 +1,145 @@
-import * as THREE from './three.module.js';
-import {TrackballControls} from './TrackballControls.js';
-import {ParametricGeometries} from './ParametricGeometries.js';
-import {get} from './urlvar/urlvar.mjs';
+import * as THREE from "./three.module.js";
+import { TrackballControls } from "./TrackballControls.js";
+import { ParametricGeometries } from "./ParametricGeometries.js";
+import { get } from "./urlvar/urlvar.mjs";
+import { ComputerScienceEffect } from "./ComputerScienceEffect.js";
 
 const MESHNUMBER = 10;
 
 let camera, controls, scene, renderer;
-let meshes, player;
-let ambientLight, pointLight
+let meshes, player, effect;
+let ambientLight, pointLight;
 
 init();
 animate();
 
 function init(
-  meshNumber=MESHNUMBER,
-  xSpread=1300,
-  ySpread=1300,
-  zSpread=500,
-){
-	camera = new THREE.PerspectiveCamera( 70, 1, 1, 10000 );
-	camera.position.z = 400;
-	scene = new THREE.Scene();
-  meshes = [...Array(meshNumber)].map((_,i) => genMesh(i%2==0,Math.floor(1+i/2)));
-	meshes.forEach(mesh => {
+  meshNumber = MESHNUMBER,
+  xSpread = 1300,
+  ySpread = 1300,
+  zSpread = 500,
+) {
+  camera = new THREE.PerspectiveCamera(70, 1, 1, 10000);
+  camera.position.z = 400;
+  scene = new THREE.Scene();
+  meshes = [...Array(meshNumber)].map((_, i) =>
+    genMesh(i % 2 == 0, Math.floor(1 + i / 2)),
+  );
+  meshes.forEach((mesh) => {
     mesh.rotation.x = 2 * Math.PI * Math.random();
     mesh.rotation.y = 2 * Math.PI * Math.random();
     mesh.rotation.z = 2 * Math.PI * Math.random();
 
     mesh.userData.pivot = new THREE.Group();
     mesh.userData.pivot.add(mesh);
-    mesh.userData.pivot.position.x = -xSpread * Math.random() +xSpread/2;
-    mesh.userData.pivot.position.y = -ySpread * Math.random() +ySpread/2;
-    mesh.userData.pivot.position.z = -zSpread * Math.random() +zSpread/2 -1600;
+    mesh.userData.pivot.position.x = -xSpread * Math.random() + xSpread / 2;
+    mesh.userData.pivot.position.y = -ySpread * Math.random() + ySpread / 2;
+    mesh.userData.pivot.position.z =
+      -zSpread * Math.random() + zSpread / 2 - 1600;
 
-	// example: http://localhost:8081/?mean=1000&variance=-100
-	const { 
-		meanX = '0',
-		varianceX = '1000',
-		meanY = '0',
-		varianceY = '0',
-		meanZ = '300',
-		varianceZ = '1000',
-	} = get();
-    mesh.position.x = Number(meanX) + Math.random() * Number(varianceX) - 1/2 * Number(varianceX);
-    mesh.position.y = Number(meanY) + Math.random() * Number(varianceY) - 1/2 * Number(varianceY);
-    mesh.position.z = Number(meanZ) + Math.random() * Number(varianceZ) - 1/2 * Number(varianceZ);
+    // example: http://localhost:8081/?mean=1000&variance=-100
+    const {
+      meanX = "0",
+      varianceX = "500",
+      meanY = "0",
+      varianceY = "0",
+      meanZ = "300",
+      varianceZ = "1000",
+    } = get();
+    mesh.position.x =
+      Number(meanX) +
+      Math.random() * Number(varianceX) -
+      (1 / 2) * Number(varianceX);
+    mesh.position.y =
+      Number(meanY) +
+      Math.random() * Number(varianceY) -
+      (1 / 2) * Number(varianceY);
+    mesh.position.z =
+      Number(meanZ) +
+      Math.random() * Number(varianceZ) -
+      (1 / 2) * Number(varianceZ);
 
-    const rho = 0.0025
-    const phi = Math.random()
-    const psi = Math.random()
+    const rho = 0.0025;
+    const phi = Math.random();
+    const psi = Math.random();
     mesh.userData.velocity = new THREE.Vector3(
-      rho*Math.cos(phi)*Math.sin(psi),
-      rho*Math.sin(phi)*Math.sin(psi),
-      rho*Math.cos(psi)
-    )
+      rho * Math.cos(phi) * Math.sin(psi),
+      rho * Math.sin(phi) * Math.sin(psi),
+      rho * Math.cos(psi),
+    );
 
-    scene.add( mesh.userData.pivot );
-  })
-	ambientLight = new THREE.AmbientLight( 0xffffff, 0.3 );
-	scene.add( ambientLight );
-	pointLight = new THREE.PointLight( 0xffffff, 0.7 )
-	pointLight.position.set(200, 200, 200)
-	scene.add(pointLight);
-	player = new THREE.Mesh(
-		new THREE.SphereBufferGeometry(5,10,10),
-		new THREE.MeshBasicMaterial({color: 0xff0000})
-	)
-	player.position.set(-100,0,0);
-	player.visible = false;
-	scene.add(player);
-	renderer = new THREE.WebGLRenderer( { antialias: true, preserveDrawingBuffer: true, alpha: true } );
-	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.physicallyCorrectLights = true;
-	// clear background color
-	renderer.setClearColor( 0xffffff, 0);
-	document.getElementById("preview").appendChild( renderer.domElement );
-	controls = new TrackballControls( camera, renderer.domElement );
-	controls.rotateSpeed = 1.0;
-	controls.zoomSpeed = 1.2;
-	controls.panSpeed = 0.8;
-	rendererResize();
+    scene.add(mesh.userData.pivot);
+  });
+  ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+  scene.add(ambientLight);
+  pointLight = new THREE.PointLight(0xffffff, 0.7);
+  pointLight.position.set(200, 200, 200);
+  scene.add(pointLight);
+  player = new THREE.Mesh(
+    new THREE.SphereBufferGeometry(5, 10, 10),
+    new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+  );
+  player.position.set(-100, 0, 0);
+  player.visible = false;
+  scene.add(player);
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    preserveDrawingBuffer: true,
+    alpha: true,
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.physicallyCorrectLights = true;
+  // clear background color
+  renderer.setClearColor(0xffffff, 0);
+  document.getElementById("preview").appendChild(renderer.domElement);
+  // example: http://localhost:8081/?shader-cs&cs-size=12&cs-radius=80&cs-touch-scale=2&shader-invert
+  const params = get();
+  if ("shader-cs" in params) {
+    effect = new ComputerScienceEffect(renderer, {
+      cellSize: Number(params["cs-size"]) || 16,
+      radius: Number(params["cs-radius"]) || 50,
+      touchScale: Number(params["cs-touch-scale"]) || 3,
+      invert: "shader-invert" in params,
+    });
+    const setPointer = (e) => effect.setPointer(e.clientX, e.clientY, e.pointerType);
+    addEventListener("pointermove", setPointer);
+    addEventListener("pointerdown", setPointer);
+    addEventListener("pointerup", (e) => {
+      if (e.pointerType != "mouse") effect.clearPointer();
+    });
+    addEventListener("pointercancel", () => effect.clearPointer());
+    document.documentElement.addEventListener("pointerleave", () => effect.clearPointer());
+  }
+  controls = new TrackballControls(camera, renderer.domElement);
+  controls.rotateSpeed = 1.0;
+  controls.zoomSpeed = 1.2;
+  controls.panSpeed = 0.8;
+  controls.enabled = false;
+  rendererResize();
 }
 
-function animate(){
-	requestAnimationFrame(animate);
-  meshes.forEach(mesh => {
+function animate() {
+  requestAnimationFrame(animate);
+  meshes.forEach((mesh) => {
     mesh.userData.pivot.rotation.x += mesh.userData.velocity.x;
     mesh.userData.pivot.rotation.y += mesh.userData.velocity.y;
     mesh.userData.pivot.rotation.z += mesh.userData.velocity.z;
-  })
-	controls.update();
-	renderer.render(scene, camera);
+  });
+  controls.update();
+  if (effect) effect.render(scene, camera);
+  else renderer.render(scene, camera);
 }
 
 function rendererResize(
-	width=window.innerWidth,
-	height=window.innerHeight
-){
-	renderer.setSize( width, height );
-	document.getElementById("preview").style.width = width+"px";
-	document.getElementById("preview").style.height = height+"px";
-	camera.aspect = width/height;
-	camera.updateProjectionMatrix();
+  width = window.innerWidth,
+  height = window.innerHeight,
+) {
+  renderer.setSize(width, height);
+  if (effect) effect.setSize(width, height);
+  document.getElementById("preview").style.width = width + "px";
+  document.getElementById("preview").style.height = height + "px";
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
 }
 
 /**
@@ -109,80 +147,80 @@ function rendererResize(
  * @param {bool} orientable
  * @param {number} genus - (Demi-)Genus
  */
-function genMesh(
-	orientable=true,
-	genus=1,
-){
-	const texture = new THREE.TextureLoader().load( 'res/texture.png' );
-	texture.magFilter = THREE.NearestFilter;
-	texture.minFilter = THREE.NearestFilter;
-	const material = new THREE.MeshLambertMaterial( { map: texture } );
-	//
-	// Sphere
-	if( orientable && genus==0 )
-		return new THREE.Mesh(
-			new THREE.SphereGeometry(100, 40, 40),
-			material
-		);
-	// n-Torus
-	else if( orientable && genus>=1 ){
-		let mesh = new THREE.Group();
-		let torus = new THREE.Mesh(
-			new THREE.TorusGeometry( 100, 30, 16, 100 ),
-			material
-		);
-		for(let i=0; i<genus; i++){
-			let clone = torus.clone();
-			clone.position.x = i*200-(genus-1)*100;
-			clone.scale.y = (-1)**i
-			mesh.add(clone)
-		}
-		// mesh.scale.set(1/Math.sqrt(genus),1/Math.sqrt(genus),1/Math.sqrt(genus))
-		return mesh;
-	}
-	// Projektiver Raum
-	else if( !orientable && genus==1 ){
-		return new THREE.Mesh(
-			new THREE.ParametricBufferGeometry(
-				(u,v,target) => target.set(
-					150*Math.cos(2*Math.PI*u)*Math.sin(Math.PI*v)/2,
-					150*Math.sin(2*Math.PI*u)*Math.sin(Math.PI*v)/2,
-					-100*(Math.cos(Math.PI/2*v)**2-Math.cos(2*Math.PI*u)**2*Math.sin(Math.PI/2*v)**2))/2
-			, 110, 110 ),
-			material
-		)
-	}
-	// Kleinsche Flasche
-	else if( !orientable && genus==2 ){
-		let mesh = new THREE.Mesh(
-			new THREE.ParametricBufferGeometry( ParametricGeometries.klein, 50, 50 ),
-			material
-		)
-		material.side = THREE.DoubleSide;
-		mesh.scale.set(15,15,15);
-		return mesh
-	}
-	else if( !orientable && genus >2 ){
-		let mesh = new THREE.Group();
-		let a
-		// Dycks Theorem
-		if( genus%2 ){
-			mesh.add(genMesh(true,Math.floor(genus/2)));
-			a = genMesh(false,1);
-			a.position.y = 150;
-			a.position.z = 80;
-		}
-		else{
-			mesh.add(genMesh(true,Math.floor(genus/2)-1));
-			a = genMesh(false,2);
-			a.rotateZ(Math.PI/2)
-			a.position.y = 200;
-		}
-		if( Math.floor((genus+1)/2)%2 )
-			a.position.x = 100;
-		mesh.add(a)
-		return mesh
-	}
+function genMesh(orientable = true, genus = 1) {
+  const texture = new THREE.TextureLoader().load("res/texture.png");
+  texture.magFilter = THREE.NearestFilter;
+  texture.minFilter = THREE.NearestFilter;
+  const material = new THREE.MeshLambertMaterial({ map: texture });
+  //
+  // Sphere
+  if (orientable && genus == 0)
+    return new THREE.Mesh(new THREE.SphereGeometry(100, 40, 40), material);
+  // n-Torus
+  else if (orientable && genus >= 1) {
+    let mesh = new THREE.Group();
+    let torus = new THREE.Mesh(
+      new THREE.TorusGeometry(100, 30, 16, 100),
+      material,
+    );
+    for (let i = 0; i < genus; i++) {
+      let clone = torus.clone();
+      clone.position.x = i * 200 - (genus - 1) * 100;
+      clone.scale.y = (-1) ** i;
+      mesh.add(clone);
+    }
+    // mesh.scale.set(1/Math.sqrt(genus),1/Math.sqrt(genus),1/Math.sqrt(genus))
+    return mesh;
+  }
+  // Projektiver Raum
+  else if (!orientable && genus == 1) {
+    return new THREE.Mesh(
+      new THREE.ParametricBufferGeometry(
+        (u, v, target) =>
+          target.set(
+            (150 * Math.cos(2 * Math.PI * u) * Math.sin(Math.PI * v)) / 2,
+            (150 * Math.sin(2 * Math.PI * u) * Math.sin(Math.PI * v)) / 2,
+            -100 *
+              (Math.cos((Math.PI / 2) * v) ** 2 -
+                Math.cos(2 * Math.PI * u) ** 2 *
+                  Math.sin((Math.PI / 2) * v) ** 2),
+          ) / 2,
+        110,
+        110,
+      ),
+      material,
+    );
+  }
+  // Kleinsche Flasche
+  else if (!orientable && genus == 2) {
+    let mesh = new THREE.Mesh(
+      new THREE.ParametricBufferGeometry(ParametricGeometries.klein, 50, 50),
+      material,
+    );
+    material.side = THREE.DoubleSide;
+    mesh.scale.set(15, 15, 15);
+    return mesh;
+  } else if (!orientable && genus > 2) {
+    let mesh = new THREE.Group();
+    let a;
+    // Dycks Theorem
+    if (genus % 2) {
+      mesh.add(genMesh(true, Math.floor(genus / 2)));
+      a = genMesh(false, 1);
+      a.position.y = 150;
+      a.position.z = 80;
+    } else {
+      mesh.add(genMesh(true, Math.floor(genus / 2) - 1));
+      a = genMesh(false, 2);
+      a.rotateZ(Math.PI / 2);
+      a.position.y = 200;
+    }
+    if (Math.floor((genus + 1) / 2) % 2) a.position.x = 100;
+    mesh.add(a);
+    return mesh;
+  }
 }
 
-addEventListener( 'resize', () => rendererResize( window.innerWidth, window.innerHeight ) );
+addEventListener("resize", () =>
+  rendererResize(window.innerWidth, window.innerHeight),
+);

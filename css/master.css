@@ -4,6 +4,8 @@ body {
 
 #preview {
   overflow: hidden;
+  /* keep touch pointer events alive instead of turning them into a scroll */
+  touch-action: none;
 }
 
 input {
