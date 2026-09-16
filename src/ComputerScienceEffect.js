@@ -69,7 +69,8 @@ vec4 digitColor( vec4 under ){
 void main(){
 	vec4 under = texture2D( scene, gl_FragCoord.xy / resolution );
 	// 0 = plain scene, 1 = digits
-	float mask = smoothstep( radius, 2.0 * radius, distance( gl_FragCoord.xy, pointer ) );
+	float r = max( radius, 0.001 );
+	float mask = smoothstep( r, 2.0 * r, distance( gl_FragCoord.xy, pointer ) );
 	if( invert ) mask = 1.0 - mask;
 	vec4 plain = vec4( under.rgb * under.a, under.a );
 	gl_FragColor = mix( plain, digitColor( under ), mask );
@@ -117,6 +118,7 @@ export class ComputerScienceEffect {
    * @param {number} emptyOpacity - opacity of the digits over empty cells
    * @param {number} radius - distance around the pointer without digits, in CSS pixels
    * @param {number} touchScale - factor applied to the radius for touch input, so the effect is not hidden under the finger
+   * @param {number} duration - time in ms for the circle to fully open or close
    * @param {bool} invert - show digits only around the pointer instead
    * @param {bool} mono - always use the digit color instead of the object's
    */
@@ -128,6 +130,7 @@ export class ComputerScienceEffect {
       emptyOpacity = 0.1,
       radius = 50,
       touchScale = 3,
+      duration = 400,
       invert = false,
       mono = false,
     } = {},
@@ -137,6 +140,11 @@ export class ComputerScienceEffect {
     this.radius = radius;
     this.touchScale = touchScale;
     this.pointerScale = 1;
+    this.duration = duration;
+    // 0 = circle closed, 1 = fully open; tweened towards pointerActive
+    this.progress = 0;
+    this.pointerActive = false;
+    this.lastTime = performance.now();
     this.cells = new THREE.Vector2(1, 1);
     this.resolution = new THREE.Vector2(1, 1);
     // in device pixels, y up; far away when there is no pointer
@@ -220,8 +228,22 @@ export class ComputerScienceEffect {
   }
 
   updateRadius() {
+    // smoothstep turns the linear progress into an S-curve
+    const eased = this.progress * this.progress * (3 - 2 * this.progress);
     this.digitMaterial.uniforms.radius.value =
-      this.radius * this.pointerScale * this.renderer.getPixelRatio();
+      this.radius * this.pointerScale * eased * this.renderer.getPixelRatio();
+  }
+
+  /**
+   * Advance the open/close tween by the time since the last frame
+   */
+  updateProgress() {
+    const now = performance.now();
+    const step = (now - this.lastTime) / this.duration;
+    this.lastTime = now;
+    const target = this.pointerActive ? 1 : 0;
+    this.progress = Math.min(Math.max(this.progress + step * Math.sign(target - this.progress), 0), 1);
+    this.updateRadius();
   }
 
   /**
@@ -233,11 +255,12 @@ export class ComputerScienceEffect {
     const pixelRatio = this.renderer.getPixelRatio();
     this.pointer.set(x * pixelRatio, (this.height - y) * pixelRatio);
     this.pointerScale = pointerType == "touch" ? this.touchScale : 1;
-    this.updateRadius();
+    this.pointerActive = true;
   }
 
   clearPointer() {
-    this.pointer.set(-1e6, -1e6);
+    // keep the position so the circle closes where it was
+    this.pointerActive = false;
   }
 
   /**
@@ -245,6 +268,7 @@ export class ComputerScienceEffect {
    * @param {THREE.PerspectiveCamera} camera
    */
   render(scene, camera) {
+    this.updateProgress();
     const renderer = this.renderer;
     const clearColor = renderer.getClearColor(new THREE.Color());
     const clearAlpha = renderer.getClearAlpha();
